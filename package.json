@@ -1,0 +1,35 @@
+{
+  "name": "webgetopts",
+  "version": "0.0.1",
+  "description": "Use comamnd line arguments to talk to websites",
+  "main": "webgetopts.js",
+  "directories": {
+    "example": "example"
+  },
+  "dependencies": {
+    "libxmljs": "~0.6.1",
+    "request": "~2.12.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "scripts/install.js"
+  },
+  "bin": {
+    "webgetopts": "./webgetopts"
+  }, "repository": {
+    "type": "git",
+    "url": "git://github.com/samsquire/webgetopts.git"
+  },
+  "keywords": [
+    "getopt",
+    "getopts",
+    "cli",
+    "command-line",
+    "commandline",
+    "metadata"
+  ],
+  "author": "Sam Squire",
+  "license": "LGPL",
+  "readmeFilename": "README.md"
+}
