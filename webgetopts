@@ -1,0 +1,124 @@
+#!/usr/bin/env node
+var fs = require('fs'),
+		spawn = require('child_process').spawn,
+		querystring = require('querystring'),
+		request = require('request');
+		path = require('path'),	
+		prefix = path.join(process.env['HOME'], '/.webgetopts/');
+
+
+function install(metadata) {
+	var templateFile = path.join(prefix, 'template');
+	var filename = path.join(prefix, metadata.site);
+	console.log("Saving webstub to:", filename);
+
+	var template = fs.createReadStream(templateFile);
+	template.on('error', function(error){console.log(error);});	
+	var webstub = fs.createWriteStream(filename);
+	template.pipe(webstub, {end: true});	
+	template.on('end', function() {
+			fs.appendFile(filename, JSON.stringify(metadata, null, 4), function(err) {
+				if (err) {
+					throw err;
+				}
+				var chmod = spawn('chmod', ['u+x', filename]);
+				chmod.stdin.on('data', function(data) {
+					console.log(data.toString());
+					});
+				chmod.stdout.on('data', function(data) {
+					console.log(data.toString());
+					});
+				chmod.stderr.on('data', function(data) {
+					console.log(data.toString());
+					});
+				chmod.on('exit', function() {
+					console.log("Created webstub with name ", metadata.site);
+					console.log("You may now use any of the following arguments:");
+					console.log();
+					console.log(metadata.site, "[options]");
+					metadata.options.split(",").forEach(function(v) {
+						var field = v.replace(":", "");
+						console.log("\t", "--" + field, "\t", "arguments for", field);		
+					});	
+					});
+				});
+			});
+}
+
+if (process.argv[2] == "install") {
+	var overrides = {};
+	console.log(process.argv, process.argv.length);
+	if (process.argv.length > 4 && process.argv[4].length >= 1) {
+		overrides["site"] = process.argv[4];
+	}
+	var wclisaver = require('./wgosaver');
+	var site = process.argv[3];
+	var metadata = wclisaver.fetch(site, overrides, install);
+		
+} else {
+	argParser = function(args) {
+		return args.reduce(function(parameters, argument ){
+				if (parameters.isOption) {
+					parameters.data[parameters.option] = argument;	
+					parameters.isOption = false;
+				}
+				if (argument.indexOf("--") != -1) {
+					parameters.option = argument.substring(2);
+					parameters.isOption = true;
+				} else if (argument.indexOf("-") != -1) {
+					parameters.option = argument.substring(1);
+					parameters.isOption = true;
+				}
+				return parameters;
+				}, { option: "", isOption: false, data: {} }
+	);
+}
+var site = process.argv[2];
+if (process.argv.length > 3) {
+	var file = spawn("sed", ["1d",  site])
+	file.stdout.on('data', function(data) {
+			var schema = JSON.parse(data.toString()); 
+			var args = process.argv.slice(3);
+
+			// args = args.map(function(arg){ return (arg.indexOf("-") == -1 ? "\"" + arg + "\"" : arg) });
+			console.log(schema);
+			file.stdin.end();
+			file.stdout.end();
+			var params = ["-o","ox", "-l", schema.options].concat(["-n", schema.site, "--"].concat( args));
+			console.log("input:", "getopt", params.join(" "));
+			var getopt = spawn("getopt", params);
+
+			getopt.stderr.on('data', function(err) {
+				console.log("error:", err.toString());
+				});	
+			getopt.stdout.on('data', function(out) {
+				console.log("output:", out.toString());
+				getopt.on('exit', function(code) {
+					if (code == -1) {
+					console.log("invalid parameters, cannot make request.");
+					return;
+					}
+					var parsed = argParser(args);
+					var encoded = querystring.stringify(parsed.data);	
+					console.log(encoded);
+					var submit = { method: 'post', url: schema.target,
+					 form: parsed.data, headers: { 'Accept': 'application/json' }
+					};
+
+	request(submit, function(error, response, body) {
+		console.log("Received response.", body);
+		if (response.headers['content-type'] == 'application/json') {
+			console.log(JSON.parse(body));	
+		} else {
+			console.log(body);
+		}
+		})
+	});	
+	});	
+	});
+
+	file.stdout.on('exit', function(data) {
+			console.log('exit');
+			});
+	}
+}
