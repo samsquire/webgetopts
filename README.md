@@ -10,13 +10,12 @@ Imagine there is a website that you would like to use as a service - perhaps for
 `website.tld --register --username myname --email myemail@provider.tld`
 
 
-
 We knew the website supported these arguments because the following arguments were advertised in the page metadata:
 
 	<meta name="webgetopts" content="username:,email:,register">
 	<link rel="webgetopts" type="application/x-www-form-urlencoded" href="submit/">
 	
-Another example 
+Another example involving an issue tracker:
 
 `issues.product.tld --ticketType bug --username myname --email myemail@provider.tld --description "I have  a bug"`
 	
@@ -30,7 +29,7 @@ If the website supports form-style data, this would be `application/x-www-form-u
 
 ### Install the website
 
-1. Installer coming soon (needs to update path etc)
+1. NPM Installer coming soon (needs to update path etc)
 2. Run `webgetopts install <address>`
 3. You can now use the hostname to talk to the site.
 
@@ -43,9 +42,9 @@ If you don't want to use the default command name, you can provide a custom name
 `webgetopts install <address> <customname>`
 This name would then be available on the terminal.
 
-#### Autocomplete
+#### Bash autocompletion
 
-If you have multiple sites installed, it might be handy to use the autocompletion, such as:
+If you have multiple sites installed, it might be handy to use your terminal's autocompletion, such as:
 
 `example.<TAB>net`
 
@@ -55,9 +54,11 @@ and get a list of your sites.
 
 
 # ToDo
+===
 
+* Make output more easily processable
 * Add support for JSON and REST APIs.
-* Generate MAN pages.
+* Generate MAN pages, allow website to define help sections.
 * Make a node package that creates ~/.webgetopts and puts template there and updates paths properly.
 * Merging getopts of multiple pages.
 * Support login techniques (OAuth etc), persist session, autologin etc
@@ -65,7 +66,8 @@ and get a list of your sites.
 * Add support for types
 * Create a Chrome extension that uses the Chrome Developer tools console but shows as a GUI showing the available options for arguments that accept lists **as you type**.
 
+### Notes
 
-
+ * If you find this interesting, take a look at OpenEmailMetadata.
 
 
