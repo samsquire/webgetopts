@@ -3,7 +3,6 @@ WebGetOpts
 
 Expose your web applications with command line arguments and use them programmatically.
 
-
 ### Example
 
 Imagine there is a website that you would like to use as a service - perhaps for personal usage or as part of your own web application. For example, registering for a service, you can run this on your terminal:
@@ -24,7 +23,7 @@ If the website supports form-style data, this would be `application/x-www-form-u
 
 ### Install the website
 
-1. Installer coming soon
+1. Installer coming soon (needs to update path etc)
 2. Run `webgetopts install <address>`
 3. You can now use the hostname to talk to the site.
 
@@ -50,7 +49,7 @@ and get a list of your sites.
 
 # ToDo
 
-* Make a node package that creates ~/.webgetopts and puts template there.
+* Make a node package that creates ~/.webgetopts and puts template there and updates paths properly.
 * Merging getopts of multiple pages.
 * Support login techniques (OAuth etc), persist session, autologin etc
 * Add validation. This could be extracted from HTML5 validation, defined manually or competely server side.
