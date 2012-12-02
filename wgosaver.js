@@ -16,16 +16,12 @@ fetch: function(address, overrides, callback){
            var val = function(result) {
              return result.value();
            }
-           console.log(extraction);
            var metadata = scrapefile($, val, extraction) 
-
-
            var URL = url.parse(response.request.uri.href);
            metadata.target = url.resolve(URL.protocol + '//' + URL.host + URL.pathname, metadata.target);
            metadata.site = URL.hostname; 
 
            for (key in metadata) {
-            console.log(key);
             if (key in overrides) {
               metadata[key] = overrides[key];
             }
