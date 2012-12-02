@@ -7,11 +7,21 @@ var fs = require('fs'),
 		prefix = path.join(process.env['HOME'], '/.webgetopts/');
 
 
+function usage(metadata) {
+		console.log(metadata.site, "[options]");
+		metadata.options.split(",").forEach(function(v) {
+			var field = v.replace(":", "");
+			console.log("\t", "--" + field, "\t", "arguments for", field);		
+		});	
+}
+
+
 function install(metadata) {
 	var templateFile = path.join(prefix, 'template');
 	var filename = path.join(prefix, metadata.site);
-	console.log("Saving webstub to:", filename);
-
+	console.log("Found the following WebGetOpts:");
+	console.log(JSON.stringify(metadata, null, 4 ));
+	console.log();
 	var template = fs.createReadStream(templateFile);
 	template.on('error', function(error){console.log(error);});	
 	var webstub = fs.createWriteStream(filename);
@@ -33,21 +43,17 @@ function install(metadata) {
 					});
 				chmod.on('exit', function() {
 					console.log("Created webstub with name ", metadata.site);
+					console.log("Saved to", filename);
 					console.log("You may now use any of the following arguments:");
 					console.log();
-					console.log(metadata.site, "[options]");
-					metadata.options.split(",").forEach(function(v) {
-						var field = v.replace(":", "");
-						console.log("\t", "--" + field, "\t", "arguments for", field);		
-					});	
-					});
+					usage(metadata);
+				});
 				});
 			});
 }
 
 if (process.argv[2] == "install") {
 	var overrides = {};
-	console.log(process.argv, process.argv.length);
 	if (process.argv.length > 4 && process.argv[4].length >= 1) {
 		overrides["site"] = process.argv[4];
 	}
@@ -75,47 +81,50 @@ if (process.argv[2] == "install") {
 }
 var site = process.argv[2];
 if (process.argv.length > 3) {
-	var file = spawn("sed", ["1d",  site])
+	var file = spawn("sed", ["1d",  site]); // remove shebang
 	file.stdout.on('data', function(data) {
 			var schema = JSON.parse(data.toString()); 
 			var args = process.argv.slice(3);
 
 			// args = args.map(function(arg){ return (arg.indexOf("-") == -1 ? "\"" + arg + "\"" : arg) });
-			console.log(schema);
 			file.stdin.end();
 			file.stdout.end();
 			var params = ["-o","ox", "-l", schema.options].concat(["-n", schema.site, "--"].concat( args));
-			console.log("input:", "getopt", params.join(" "));
 			var getopt = spawn("getopt", params);
-
+			var errors = "";
 			getopt.stderr.on('data', function(err) {
-				console.log("error:", err.toString());
-				});	
+				errors = errors += err.toString();
+			});	
 			getopt.stdout.on('data', function(out) {
-				console.log("output:", out.toString());
 				getopt.on('exit', function(code) {
-					if (code == -1) {
-					console.log("invalid parameters, cannot make request.");
-					return;
+					if (code == 1) {
+						console.log("Error: Invalid parameters, cannot make request.");
+						console.log(errors);	
+						usage(schema);
+						return;
 					}
 					var parsed = argParser(args);
 					var encoded = querystring.stringify(parsed.data);	
-					console.log(encoded);
 					var submit = { method: 'post', url: schema.target,
 					 form: parsed.data, headers: { 'Accept': 'application/json' }
 					};
-
+	console.log();
+	console.log(submit.method.toUpperCase(), submit.url);
+	console.log(">\t", encoded);
+	
 	request(submit, function(error, response, body) {
-		console.log("Received response.", body);
-		if (response.headers['content-type'] == 'application/json') {
-			console.log(JSON.parse(body));	
+		var type = response.headers['content-type'];
+		console.log();
+		console.log("< Received", type);
+		if (type == 'application/json') {
+			console.log(JSON.stringify(JSON.parse(body), null, 4));	
 		} else {
 			console.log(body);
 		}
 		})
 	});	
 	});	
-	});
+});
 
 	file.stdout.on('exit', function(data) {
 			console.log('exit');
