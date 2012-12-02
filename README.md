@@ -9,12 +9,19 @@ Imagine there is a website that you would like to use as a service - perhaps for
 
 `website.tld --register --username myname --email myemail@provider.tld`
 
-`issues.product.tld --ticketType bug --username myname --email myemail@provider.tld --description "I have  a bug"`
+
 
 We knew the website supported these arguments because the following arguments were advertised in the page metadata:
 
 	<meta name="webgetopts" content="username:,email:,register">
 	<link rel="webgetopts" type="application/x-www-form-urlencoded" href="submit/">
+	
+Another example 
+
+`issues.product.tld --ticketType bug --username myname --email myemail@provider.tld --description "I have  a bug"`
+	
+	<meta name="webgetopts" content="ticketType:,email:,username:,description:">
+	<link rel="webgetopts" type="application/x-www-form-urlencoded" href="bugreport/">
 
 WebGetOpts binds `getopt` style arguments to a site or web application that the website claims to support. The website can decide upon the incoming **and** the reply format.
 
@@ -49,6 +56,8 @@ and get a list of your sites.
 
 # ToDo
 
+* Add support for JSON and REST APIs.
+* Generate MAN pages.
 * Make a node package that creates ~/.webgetopts and puts template there and updates paths properly.
 * Merging getopts of multiple pages.
 * Support login techniques (OAuth etc), persist session, autologin etc
