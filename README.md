@@ -34,20 +34,23 @@ If the website supports form-style data, this would be `application/x-www-form-u
 #### Use a different command name
 
 If you don't want to use the default command name, you can provide a custom name:
-`webgetopts install <address> <customname`
-This name would then be available on the terminal
+`webgetopts install <address> <customname>`
+This name would then be available on the terminal.
 
 #### Autocomplete
 
 If you have multiple sites installed, it might be handy to use the autocompletion, such as:
 
-example.<TAB>net
-www.<TAB><TAB>
+`example.<TAB>net`
+
+`www.<TAB><TAB>`
+
 and get a list of your sites.
 
 
 # ToDo
 
+* Make a node package that creates ~/.webgetopts and puts template there.
 * Merging getopts of multiple pages.
 * Support login techniques (OAuth etc), persist session, autologin etc
 * Add validation. This could be extracted from HTML5 validation, defined manually or competely server side.
