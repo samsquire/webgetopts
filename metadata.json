@@ -1,0 +1,4 @@
+{
+  "options": "//meta[@name=\"webgetopts\"]/@content",
+  "target": "//link[@rel=\"webgetopts\"]/@href"
+}
